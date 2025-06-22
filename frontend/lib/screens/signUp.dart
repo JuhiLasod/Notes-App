@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
-import './home.dart';
-// import './footer.dart';
-import './signUp.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-class login extends StatefulWidget{
-  const login({super.key});
+import 'package:http/http.dart' as http;
+import './home.dart';
+class signUp extends StatefulWidget{
+  const signUp({super.key});
   @override
-  State<login> createState()=> _LoginState();
+  State<signUp> createState()=> _SignUpState();
 }
-
-class _LoginState extends State<login>
+class _SignUpState extends State<signUp>
 {
   final TextEditingController _controlleremail=TextEditingController();
   final TextEditingController _controllerpass=TextEditingController();
   String email='';
   String pass='';
   String msg='';
-  void _navigateToSignUp(){
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>const signUp()));
-  }
+  bool loading=false;
   void _handleLogin() async{
+    setState((){loading=true;});
+    setState((){msg='';});
     try{
-    final res=await http.post(Uri.parse("http://10.0.2.2:8000/api/login"),
+    final res=await http.post(Uri.parse("http://10.0.2.2:8000/api/signup"),
       headers: {"Content-Type":"application/json"},
       body: jsonEncode({"email": email,"pass": pass})
     );
-
-    if(res.body=='success')
-    {
-      Navigator.push(context,MaterialPageRoute(builder: (context)=>const home()));
+    setState((){
+      msg=res.body;
+      loading=false;
+    });
+    
     }
-    else{
-      setState((){msg=res.body;});
-    }}
     catch(err)
     {
-      setState((){msg='Not able to Login! Please try again later.';});
+      setState((){
+        msg='Not able to sign up! Please try again later.';
+        loading=false;
+      });
+      
     }
+    setState((){email='';});
+    setState((){pass='';});
     
   }
   @override
@@ -71,6 +72,16 @@ class _LoginState extends State<login>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children:[
+                  Padding(
+                    padding: EdgeInsetsGeometry.fromLTRB(0, 30, 0, 30),
+                    child: Text('Hello there! Welcome to the Notes-App - Your new home for organized thougts. Sign up to start capturing your ideas, anytime, anywhere.',
+                      style: TextStyle(
+                        fontFamily: 'spaced',
+                        color: Color.fromARGB(255, 118, 13, 8),
+                        fontWeight: FontWeight.bold
+                      )
+                    )
+                  ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(0,20,0,20),
                     child:Text('Email:',style: TextStyle(fontFamily: 'basic',fontSize: 17,color: Color.fromARGB(255, 118, 13, 8)))
@@ -109,21 +120,7 @@ class _LoginState extends State<login>
                     ),
                   ),
                   const SizedBox(height: 10.0),
-                  Padding(
-                    padding: EdgeInsetsGeometry.fromLTRB(0,20,0,0),
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: _navigateToSignUp,
-                        child: Text('New here? Create your account now!',
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            decoration: TextDecoration.underline ,
-                            color: Color.fromARGB(255, 118, 13, 8)
-                          )
-                        )
-                      ),
-                    ),
-                  ),
+                  
                   Padding(
                     padding: EdgeInsetsGeometry.all(50),
                     child: Center(
@@ -131,14 +128,14 @@ class _LoginState extends State<login>
                         width: 200,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: _handleLogin,
+                          onPressed: loading? null: _handleLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 118, 13, 8),
                             foregroundColor: Color.fromARGB(255, 234, 218, 62186),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             // shadowColor: Color.fromARGB(255, 118, 13, 8)
                           ),
-                          child: Text('Sign in',style: TextStyle(fontSize: 20,fontFamily: 'basic')),
+                          child: Text('Sign up',style: TextStyle(fontSize: 20,fontFamily: 'basic')),
                           
                         ),
                       ),
