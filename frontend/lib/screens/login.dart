@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './home.dart';
+// import './footer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 class login extends StatefulWidget{
@@ -31,7 +32,7 @@ class _LoginState extends State<login>
     }}
     catch(err)
     {
-      setState((){msg='noit okay';});
+      setState((){msg='Not able to Login! Please try again later.';});
     }
     
   }
@@ -39,55 +40,102 @@ class _LoginState extends State<login>
   Widget build(BuildContext context)
   {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 118, 13, 8),
+        title:Padding(
+          padding: EdgeInsetsGeometry.fromLTRB(0, 0, 0, 10),
+          child: Column(
+            
+            // mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            
+            children: [
+              Text('Notes',style: TextStyle(color: const Color.fromARGB(255, 234, 218, 218),fontFamily: 'spaced',fontSize: 30,fontWeight: FontWeight.bold)),
+              Text('Your thoughts, organized.',style: TextStyle(color: const Color.fromARGB(255, 234, 218, 218),fontSize: 15))
+            ]
+          ),
+        ),
+        
+      ),
+      backgroundColor: Color.fromARGB(255, 234, 218, 218),
       body: 
             Padding(
               padding:EdgeInsets.all(20),
               child: Center(
+      
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children:[
-                  Text('email:'),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0,20,0,20),
+                    child:Text('Email:',style: TextStyle(fontFamily: 'basic',fontSize: 17,color: Color.fromARGB(255, 118, 13, 8)))
+                  ),
                   
                   TextField(
                     controller: _controlleremail,
                     onChanged: (value){
                       setState((){email=_controlleremail.text;});
                     },
-                    decoration: const InputDecoration(
+                    decoration:  InputDecoration(
                       hintText: 'Enter your email ',
-                      border: OutlineInputBorder(), 
+                      hintStyle: TextStyle(color: Color.fromARGB(255, 118, 13, 8).withAlpha(60),),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20)
+                      ), 
                     ),
                   ),
-                  const SizedBox(height: 20.0),
-                  Text('password:'),
-                  
+                  const SizedBox(height: 10.0),
+                  Padding(  
+                    padding: EdgeInsets.fromLTRB(0,20,0,20),  
+                    child:Text('Password:',style: TextStyle(fontFamily: 'basic',fontSize: 17,color: Color.fromARGB(255, 118, 13, 8))),
+                  ),
                   TextField(
                     controller: _controllerpass,
                     onChanged: (value){
                       setState((){pass=_controllerpass.text;});
                     },
-                    decoration: const InputDecoration(
+                    decoration:  InputDecoration(
                       hintText: 'Enter password ',
-                      border: OutlineInputBorder(), 
+                      hintStyle: TextStyle(color: Color.fromARGB(255, 118, 13, 8).withAlpha(60)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20)
+                      ),
+                       
                     ),
                   ),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 10.0),
                   
-                  Center(
-                    child: SizedBox(
-                      width: 100,
-                      child: ElevatedButton(
-                        onPressed: _handleLogin,
-                        child: Text('Sign in'),
+                  Padding(
+                    padding: EdgeInsetsGeometry.all(50),
+                    child: Center(
+                      child: SizedBox(
+                        width: 200,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _handleLogin,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 118, 13, 8),
+                            foregroundColor: Color.fromARGB(255, 234, 218, 62186),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            // shadowColor: Color.fromARGB(255, 118, 13, 8)
+                          ),
+                          child: Text('Sign in',style: TextStyle(fontSize: 20,fontFamily: 'basic')),
+                          
+                        ),
                       ),
                     ),
                   ),
-                  Text(msg)
+                  Center(child:Text(msg,style: TextStyle(fontSize:15, color: Color.fromARGB(255, 118, 13, 8),))),
+                  
+                  // footer()
                   ]
                   ),
-                )
-              )
+                ),
+              
+              ),
+              // bottomNavigationBar: footer(),
+              bottomNavigationBar: Row(mainAxisAlignment: MainAxisAlignment.center, children:[ Padding(padding: EdgeInsets.fromLTRB(0, 0, 0, 20), child: Text('©️ 2025 This app is developed by Juhi Lasod'))]),
         );
   }
 }
