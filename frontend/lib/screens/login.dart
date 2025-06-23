@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './home.dart';
 // import './footer.dart';
 import './signUp.dart';
@@ -17,18 +18,42 @@ class _LoginState extends State<login>
   String email='';
   String pass='';
   String msg='';
+  Future <void> saveEmail(String email)async
+  {
+    try{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email',email);
+    print("Saved email: ${prefs.getString('email')}");
+    }
+    catch(e){
+      print("error is $e");
+    }
+  }
+  
+// void initState() {
+//   super.initState();
+//   saveEmail();
+// }
+  
+
   void _navigateToSignUp(){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>const signUp()));
   }
+
   void _handleLogin() async{
+    final enteredEmail = _controlleremail.text.trim();
+  final enteredPass = _controllerpass.text.trim();
     try{
     final res=await http.post(Uri.parse("http://10.0.2.2:8000/api/login"),
       headers: {"Content-Type":"application/json"},
-      body: jsonEncode({"email": email,"pass": pass})
+      body: jsonEncode({"email": enteredEmail,"pass": enteredPass})
     );
-
+    print("req sent to backend");
     if(res.body=='success')
     {
+      print("inside succes block");
+      await saveEmail(enteredEmail);
+      print("after save mail");
       Navigator.push(context,MaterialPageRoute(builder: (context)=>const home()));
     }
     else{
@@ -38,8 +63,8 @@ class _LoginState extends State<login>
     {
       setState((){msg='Not able to Login! Please try again later.';});
     }
-    
   }
+
   @override
   Widget build(BuildContext context)
   {
@@ -78,9 +103,9 @@ class _LoginState extends State<login>
                   
                   TextField(
                     controller: _controlleremail,
-                    onChanged: (value){
-                      setState((){email=_controlleremail.text;});
-                    },
+                    // onChanged: (value){
+                    //   setState((){email=_controlleremail.text;});
+                    // },
                     decoration:  InputDecoration(
                       hintText: 'Enter your email ',
                       hintStyle: TextStyle(color: Color.fromARGB(255, 118, 13, 8).withAlpha(60),),
@@ -96,9 +121,9 @@ class _LoginState extends State<login>
                   ),
                   TextField(
                     controller: _controllerpass,
-                    onChanged: (value){
-                      setState((){pass=_controllerpass.text;});
-                    },
+                    // onChanged: (value){
+                    //   setState((){pass=_controllerpass.text;});R
+                    // },
                     decoration:  InputDecoration(
                       hintText: 'Enter password ',
                       hintStyle: TextStyle(color: Color.fromARGB(255, 118, 13, 8).withAlpha(60)),
