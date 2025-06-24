@@ -15,51 +15,79 @@ class _HomeState extends State<home> {
   String savedEmail = '';
   bool isLoading = true;
   String msg='';
-  String note='';
+  List <String> notes= [];
   final TextEditingController _noteController= TextEditingController();
   void loadEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('email');
+    // setState(() {
+    //   savedEmail = email ?? 'No email found';
+    //   isLoading = false;
+    // });
     setState(() {
-      savedEmail = email ?? 'No email found';
-      isLoading = false;
-    });
+    savedEmail = email ?? 'No email found';
+    isLoading = false;
+  });
+
+  if (email != null) {
+    fetchNotes(); 
+  }
   }
 
-  void _handleNew()async{
-    // try{
-    //   final res=await http.post(Uri.parse('http://10.0.2.2:8000.api/new'),
-    //     headers:{'Content-Type': 'application/json'},
-    //     body: jsonEncode({
-    //       'email':savedEmail,
-    //       'note': note})
-    //   );
-    //   if(res=='success')
-    //   {
-    //     setState((){
-    //       msg='added new';
-    //     });
-    //   }
-    //   else{
-    //     setState((){
-    //       msg='not able to add new';
-    //     });
-    //   }
+  void fetchNotes()async{
+    try{
+      final res=await http.post(Uri.parse('http://10.0.2.2:8000/api/fetch-notes'),
+        headers:{'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email':savedEmail,
+          })
+      );
+      print("req sent to backend");
+      if(res.statusCode==200)
+      {
+        setState((){
+          msg=res.body;
+        });
+        // final List <String> data=json.decode(res.body);
+        // setState((){
+        //   notes=List<String>.from (data);
+        // });
+      }
+      else
+      {
+        setState((){
+          msg=res.body;
+        });
+      }
     
-    // }
-    // catch(e){
-    //   print(e);
-    // }
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> const newNote()));
+    }
+    catch(e){
+      print(e);
+    }
+    
+  }
+  void _handleNew()async{
+    try{
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> const newNote()));
+      
+    }
+    catch(e)
+    {
+      setState((){
+          msg='not ble to add new';
+        });
+    }
   }
   @override
   void initState() {
     super.initState();
     loadEmail();
+    // fetchNotes();
   }
 
   @override
   Widget build(BuildContext context) {
+    fetchNotes();
     return Scaffold(
       body: Padding(
         padding: EdgeInsetsGeometry.all(50),
