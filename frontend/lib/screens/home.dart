@@ -34,6 +34,23 @@ class _HomeState extends State<home> {
   }
   }
 
+  void deleteNotes( String title,String content) async {
+  try {
+    final res = await http.post(
+      Uri.parse('http://10.0.2.2:8000/api/delete'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': savedEmail, 'title': title , 'content': content}),
+    );
+    setState((){
+      msg=res.body;
+    });
+    fetchNotes();
+  }
+  catch(e)
+  {
+    print("failed");
+  }
+  }
   void fetchNotes() async {
   try {
     final res = await http.post(
@@ -91,6 +108,7 @@ Widget build(BuildContext context) {
     body: SafeArea(
       child: Column(
         children: [
+          Text(msg),
           SizedBox(height: 10),
           ElevatedButton(
             onPressed: _handleNew,
@@ -106,6 +124,10 @@ Widget build(BuildContext context) {
                 itemBuilder: (context, index) => ListTile(
                   title: Text(notes[index]['title']?.isNotEmpty == true? notes[index]['title']: 'No Title'),
                   subtitle: Text(notes[index]['content']?.isNotEmpty == true? notes[index]['content']: 'No content'),
+                  trailing: ElevatedButton(
+                    onPressed: (){deleteNotes(notes[index]['title'],notes[index]['content']);},
+                    child: Text('delete'),
+                  )
                 ),
               ),
             ),
