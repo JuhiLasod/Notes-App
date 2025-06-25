@@ -15,7 +15,7 @@ class _HomeState extends State<home> {
   String savedEmail = '';
   bool isLoading = true;
   String msg='';
-  List <String> notes= [];
+  List<Map<String, dynamic>> notes = [];
   final TextEditingController _noteController= TextEditingController();
   void loadEmail() async {
     final prefs = await SharedPreferences.getInstance();
@@ -34,42 +34,41 @@ class _HomeState extends State<home> {
   }
   }
 
-  void fetchNotes()async{
-    try{
-      final res=await http.post(Uri.parse('http://10.0.2.2:8000/api/fetch-notes'),
-        headers:{'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email':savedEmail,
-          })
-      );
-      print("req sent to backend");
-      if(res.statusCode==200)
-      {
-        setState((){
-          msg=res.body;
-        });
-        // final List <String> data=json.decode(res.body);
-        // setState((){
-        //   notes=List<String>.from (data);
-        // });
-      }
-      else
-      {
-        setState((){
-          msg=res.body;
-        });
-      }
-    
+  void fetchNotes() async {
+  try {
+    final res = await http.post(
+      Uri.parse('http://10.0.2.2:8000/api/fetch-notes'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': savedEmail}),
+    );
+
+    print("res.body: ${res.body}");
+    final data = json.decode(res.body);
+
+    if (data is List) {
+      setState(() {
+        notes = List<Map<String, dynamic>>.from(data);
+
+        msg = '';
+      });
+    } else {
+      setState(() {
+        notes = [];
+        msg = 'No notes found';
+      });
     }
-    catch(e){
-      print(e);
-    }
-    
+  } catch (e) {
+    print("Error: $e");
+    setState(() {
+      msg = 'Failed to load notes';
+    });
   }
+}
+
   void _handleNew()async{
     try{
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> const newNote()));
-      
+      await Navigator.push(context, MaterialPageRoute(builder: (context)=> const newNote()));
+      fetchNotes();
     }
     catch(e)
     {
@@ -85,24 +84,36 @@ class _HomeState extends State<home> {
     // fetchNotes();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    fetchNotes();
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsetsGeometry.all(50),
-        child: Column(
-          children: [Center(
-            child: ElevatedButton(
-              onPressed: _handleNew,
-              child: Text('add new')
-            )
-                  
+ 
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: SafeArea(
+      child: Column(
+        children: [
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: _handleNew,
+            child: Text('Add New'),
           ),
-          Text(msg)
-          ]
-        ),
+          if (msg.isNotEmpty) Text(msg),
+          if (isLoading)
+            CircularProgressIndicator()
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: notes.length,
+                itemBuilder: (context, index) => ListTile(
+                  title: Text(notes[index]['title']?.isNotEmpty == true? notes[index]['title']: 'No Title'),
+                  subtitle: Text(notes[index]['content']?.isNotEmpty == true? notes[index]['content']: 'No content'),
+                ),
+              ),
+            ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 }

@@ -3,15 +3,13 @@ const fetchNotesController=async(req,res)=>{
     try{
     const {email}=req.body;
     const exist=await Notes.findOne({email});
-    if(exist)
-    {
-        console.log("inside if");
-        res.status(200).json("some notes fpund for this email")
+    if (exist && exist.notes && exist.notes.length > 0) {
+      res.status(200).json(exist.notes); 
     }
     else
     {
     console.log("inside else");
-        res.status(200).json("no notes found");
+        res.status(200).json([]);
         
     }
     }

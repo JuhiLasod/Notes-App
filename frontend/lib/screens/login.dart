@@ -18,6 +18,16 @@ class _LoginState extends State<login>
   String email='';
   String pass='';
   String msg='';
+  bool visible=true;
+  bool loading=false;
+  void setVisible()
+  {
+    
+    setState((){
+      visible= !visible;
+    });
+    
+  }
   Future <void> saveEmail(String email)async
   {
     try{
@@ -41,6 +51,11 @@ class _LoginState extends State<login>
   }
 
   void _handleLogin() async{
+    setState((){
+      loading=true;
+      msg='';
+    });
+    
     final enteredEmail = _controlleremail.text.trim();
   final enteredPass = _controllerpass.text.trim();
     try{
@@ -63,11 +78,23 @@ class _LoginState extends State<login>
     {
       setState((){msg='Not able to Login! Please try again later.';});
     }
+    setState((){
+      loading=false;
+    });
+    
   }
-
+  @override
+  void initState(){
+    super.initState();
+    setState((){ 
+      pass='';
+      email='';
+    });
+  }
   @override
   Widget build(BuildContext context)
   {
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 118, 13, 8),
@@ -124,12 +151,17 @@ class _LoginState extends State<login>
                     // onChanged: (value){
                     //   setState((){pass=_controllerpass.text;});R
                     // },
+                    obscureText: visible,
                     decoration:  InputDecoration(
                       hintText: 'Enter password ',
                       hintStyle: TextStyle(color: Color.fromARGB(255, 118, 13, 8).withAlpha(60)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20)
                       ),
+                      suffixIcon: IconButton(
+                        onPressed: setVisible,
+                        icon: Icon(visible? Icons.visibility : Icons.visibility_off  )
+                      )
                        
                     ),
                   ),
@@ -156,7 +188,7 @@ class _LoginState extends State<login>
                         width: 200,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: _handleLogin,
+                          onPressed: loading? null: _handleLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 118, 13, 8),
                             foregroundColor: Color.fromARGB(255, 234, 218, 62186),
