@@ -18,6 +18,7 @@ class _newNoteState extends State<newNote> {
   String title='';
   final TextEditingController _noteController= TextEditingController();
   final TextEditingController _titleController= TextEditingController();
+  // final TextEditingController _titleController= TextEditingController();
   void loadEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('email');
@@ -30,6 +31,7 @@ class _newNoteState extends State<newNote> {
   void _handleNew()async{
     try{
       content= _noteController.text;
+      title= _titleController.text;
       final res=await http.post(Uri.parse('http://10.0.2.2:8000/api/new'),
         headers:{'Content-Type': 'application/json'},
         body: jsonEncode({
@@ -69,6 +71,10 @@ class _newNoteState extends State<newNote> {
         child: Column(
           children: [
             Text(msg),
+            TextField(
+              controller: _titleController,
+
+            ),
             TextField(
               controller: _noteController,
 
