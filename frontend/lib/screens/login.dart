@@ -19,6 +19,7 @@ class _LoginState extends State<login>
   String pass='';
   String msg='';
   bool visible=true;
+  bool isLoggedIn=false;
   bool loading=false;
   void setVisible()
   {
@@ -28,11 +29,12 @@ class _LoginState extends State<login>
     });
     
   }
-  Future <void> saveEmail(String email)async
+  Future <void> saveEmail(String email,bool isLoggedIn)async
   {
     try{
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('email',email);
+    await prefs.setBool('isLoggedIn',isLoggedIn);
     print("Saved email: ${prefs.getString('email')}");
     }
     catch(e){
@@ -67,9 +69,12 @@ class _LoginState extends State<login>
     if(res.body=='success')
     {
       print("inside succes block");
-      await saveEmail(enteredEmail);
+      setState(() {
+        isLoggedIn=true;
+      });
+      await saveEmail(enteredEmail,isLoggedIn);
       print("after save mail");
-      Navigator.push(context,MaterialPageRoute(builder: (context)=>const home()));
+      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context)=>const home()));
     }
     else{
       setState((){msg=res.body;});

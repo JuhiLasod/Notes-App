@@ -73,19 +73,47 @@ class _newNoteState extends State<newNote> {
             Text(msg),
             TextField(
               controller: _titleController,
-
+              decoration: InputDecoration(
+                hintText: 'title',
+                hintStyle: TextStyle(color: Color.fromARGB(255, 118, 13, 8).withAlpha(60),)
+              )
             ),
             TextField(
               controller: _noteController,
+              decoration: InputDecoration(
+                hintText: 'Text',
+                hintStyle: TextStyle(color: Color.fromARGB(255, 118, 13, 8).withAlpha(60),)
+              )
 
             ),
-            ElevatedButton(
-              onPressed: _handleNew, 
-              child: Text('add')
-            )
-          ],
-        )
-      ),
-    );
+            Padding(
+                    padding: EdgeInsetsGeometry.all(50),
+                    child: Center(
+                      child: SizedBox(
+                        width: 200,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _handleNew,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromARGB(255, 118, 13, 8),
+                            foregroundColor: Color.fromARGB(255, 234, 218, 62186),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            // shadowColor: Color.fromARGB(255, 118, 13, 8)
+                          ),
+                          child: Text('Add',style: TextStyle(fontSize: 20,fontFamily: 'basic')),
+                          
+                        ),
+                      ),
+                    ),
+                  ),
+                  Center(child:Text(msg,style: TextStyle(fontSize:15, color: Color.fromARGB(255, 118, 13, 8),))),
+                  
+                  // footer()
+                  ]
+                  ),
+                ),
+              
+              );
+    
   }
 }

@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './screens/login.dart';
-void main()=>runApp(MyApp());
+import './screens/home.dart';
 
-class MyApp extends StatefulWidget{
-  const MyApp ({super.key});
-  
-  @override
-  State <MyApp> createState() => _MyAppState(); 
+void main() {
+  runApp(MyApp());
 }
 
-class _MyAppState extends State<MyApp>{
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  Future<bool> checkLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return MaterialApp(
-      home: login()
-      
+      home: FutureBuilder<bool>(
+        future: checkLogin(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Show loading screen while checking login
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          } else {
+            return snapshot.data == true ? const home() : const login();
+          }
+        },
+      ),
     );
   }
 }
